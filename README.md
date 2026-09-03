@@ -1,1 +1,1 @@
-# devops-and-cloud
+# DevOps and Cloud - септември 2026
