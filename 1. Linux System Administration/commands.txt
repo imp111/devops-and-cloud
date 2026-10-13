@@ -1,0 +1,223 @@
+pwd
+ls (-lah)
+cd
+cat (-n)
+date
+hostname
+cal (-3)
+hostnamectl (hostnamectl set-hostname nameOfTheNewHostname)
+uname (-a)
+uptime (--pretty)
+history (saved in ~/.bash_history)
+exit
+logout 
+reboot
+poweroff
+halt (-p)
+shutdown
+wall - send message to everybody terminal (to all logged in users)
+
+$PATH, $USER, $SHELL, $HOME, $HOSTNAME, $PWD, $SHLVL, #HISTSIZE (vars can be both system level or user level, the vars are inheritable)
+Vars are read using the $ symbol (echo $SHELL) and edited by using only the var (SHELL="asd")
+Special Env Variables - $? (returns the exit code of the last executed command - 0 success, something else - error), $! (PID of the last job run in background), $$ (PID of the current process), $_ (final argument of the previous command)
+Prompt related - $PS1, $PS2 (each of these two is using prompt macros)
+Prompt macros - \H, \$, \#
+
+printenv - print env variables
+env - runs a program in a modified env (env MYVAR=100 PS1="CHILD:$PS1" bash), the var in the example is created only for the child process created. Can be used to shows env vars (vars focused)
+set (+o, -o) - displays values of shell vars and controls shell options
+unset (-v) - unset values and attributes of shell vars and funcs
+export - used to set inheritable env variables (by default, the new vars are not inherited)
+
+
+Executable Artifacts in Shell:
+- Shell Built-in commands (specific commands for the shell we are using)
+- External commands (they are outside of the shell we are using and can be executed by any shell, not shell dependant)
+	- Binary files - 
+	- Scripts
+- Special Types 
+	- Functions - dependand on the specific shell, written for the specific shell
+	- Aliases 
+	
+Execution - 
+Sourcing -
+
+
+Static Linking - Big in size, all is in the package (libs are packaged with the app itself)
+Dynamic Linking - small in size, dependencies (the app needs to have dependencied installed additionally)
+
+Packages solves this issue - tracks dependencies, easy installation and update of dependencies
+
+Package contains:
+System data
+	- name
+	- version
+Actual content
+	- binary files
+	- config files
+	- documentation files
+
+Package formats:
+.rpm - Red hat packages
+.deb - Debian packages
+
+Low level package management (They can only install, update, remove LOCAL PACKAGES):
+- rpm (Red hat)
+	- RPM Database - /var/lib/rpm
+		- rpm --rebuilddb (can rebuild itself, in case the database is corrupted)
+		- only one user can access the database at a time, which prevents problems (implemented by: /var/lib/rpm/.rpm.lock)
+	- RPM Package files
+		- source and binary
+		- full, patch and delta (difference between two version is delta)
+		- Contains - compressed binary files, name and version, build date and host, description, checksums and dependencies required
+		- When asking for info about a package:
+			- If it is already installed, the info comes from the rpm database
+			- For not installed packages, it comes from the package itself, as it contains the meta data necessary for the info
+	
+- dpkg (Debian)
+	- DEB Database - /var/lib/dpkg
+		- again, only one user can work at a time (lock file: /var/lib/dpkg/lock
+	- DEB Package files
+		- source and binary
+		- ar archive file
+		- Three parts
+			- Header - debian-binary
+			- Control archive - control.tar.{gzip, xz}
+			- Data Archive - data.tar.{gzip, xz, lzma}
+		- When asking for info about a package:
+			- If it is already installed, the info comes from the dpkg database
+			- For not installed packages, it comes from the package itself, as it contains the meta data necessary for the info
+
+High level package management (They can work with remote repositories, searching and downloading packages):
+- yum and dnf (Fedora - Red hat)
+- zypper (openSUSE)
+- apt (Debian)
+
+ldd - print shared object dependencies (ldd /bin/ls - shows path and address, if one of the two is missing, we have a missing dependencie)
+rpm
+	-qa - query for installed packages
+	-q packageName - query for a specific installed package
+	-qip packageName.rpm - query local but not installed package
+	-ql packageName - list all files in a package
+	-qf /etc/fstab - query for file dependency
+	-qc openssh  - find package config files
+	-ivh package.rpm - install specific package
+	-ivh *.rpm - install all packages in the current folder
+	-Uv *.rpm - upgrade and install all packages from files in folder
+	-Fvh *.rpm - freshen (upgrade if installed) packages
+	-e package - remove package
+	-e package-3.17.0-200.e17 - remove specific package with specific version
+dpkg
+	--list
+	--status wget
+	--listfiles wget
+	--search /etc/bash.bashrc
+	--install package.deb
+	--remove package - remove package but leave config files
+	--purge package - removes package and config files
+	--configure package - reconfigure an installedp package
+	
+	
+
+Storage types:
+- Local
+	(DAS - Direct-attached Storage - no network is needed, directly connected to the device)
+	- Internal - SSD (solid-state), Hard drive (spindle) 
+	- External - External Hard drive, USB
+	
+- Remote
+	- File-based - Network-Attached Storage (NAS) - it is pretty much ready to use, once we connect to it
+	- Block-based - Storage Area Network (SAN) - needs to be configured, someones gives us a block, which we put a file system on and configure it (it does not come ready to use out of the box).
+	
+Disk types:
+- PATA (Parallel ATA) - /dev/hdX (128 - 1064 Mbps)
+- SATA (Serial ATA) - /dev/sdX and /dev/srN (1.5 - 6.0 Gbps)
+- SCSI (Small Computer System Interface) - /dev/sdX and /dev/srN
+- NVMe (Non-Volatile Memory Express) - /dev/nvmeNnM (16 Gbps per lane, PCIe)
+
+Measure Units:
+- MB (megabyte) - 10^6 B = 1 MB (1 MB = 1000 KB = 1000 * 1000 B = 1000000 B)
+- MiB (mebibyte) - 2^20 B = 1 MiB (1 MiB = 1024 KB = 1024 * 1024 B = 1048576 B)
+
+Partition Schemes:
+- MBR (Master Boot Record)
+	- Occupiues first 512 Bytes
+	- Up to 4 primary partitions (3 primary + 1 ext)
+	- 2 TiB max size per partition
+	- Types
+		- Primary
+		- Extended (container for logical)
+		- Logical
+
+MBR Table (512 B)
+Partitions
+Extended Paritition
+Unallocated space
+
+- GPT (GUID Partition Table)
+	- Up to 128 partitions
+	- 8 ZiB max size per partition
+	- Has protective MBR
+	- Has two copies of the partition table
+	
+MBR protection (512 B)
+GPT Headers (512 B)
+Primary GPT (16 KiB)
+Partitions
+Backup GPT (16 KiB)
+	
+MBR and GPT are used for adding file systems to them. This special one does not.
+
+RAW Partitions
+	- no filesystem
+	- used usualy for enterprise databases
+	
+SWAP Partitions (extension of the RAM)
+	- no filesystem
+	- used to offload memory pages from RAM (usually is 1-2x RAM size)
+	
+Partition Codes
+	- Linux Filesystem
+		- MBR - 83
+		- GPT - 8300
+	- Linux SWAP
+		- MBR - 82
+		- GPT - 8200
+	- Linux LVM
+		- MBR - 8e
+		- GPT - 8e00
+		
+Directories that can be added to separate partitions:
+- /home
+- /tmp
+- /var
+- /opt
+- /boot
+
+Filesystem - the way the storage of data is organized on a disk or partition of a disk
+
+Filesystem components
+	- Superblock - contains the characteristics of the filesystem (size, block size, empty and filled blocks, size and location of the indoe t able). One main and multiple copies
+	- Inode - data structure that stores all the information (metadata - file type, size, creation date, modification date, last opened date) about a file, except its name and data
+	- Data block - contains the information stored in the individual files
+	
+Filesystem structure:
+Super block (1 block) -> Group Descriptors (N blocks) -> Data Block Bitmap (1 block) -> Inode Bitmap (1 block) -> Indoe Table (N blocks) -> Data blocks (N blocks)
+
+Filesystem types:
+	- Extended filesystem - Ext(2,3,4)
+	- Extents Filesytem - xfs
+	- btrfs (copy-on-write filesystem)
+
+Journaling - keeps track of filesystem changes
+
+Commands:
+lsblk (-f) - list block devices
+fdisk (-l) - manipulate disk partition table (MBR)
+gdisk (-l) - manipulate disk partition table (GPT)
+parted (-l) - partition manipulation program
+dd - copy a file, converting and formatting  (dd if=/dev/sdc of=512.mbr bs=512 count=1) if=read from, of=write to
+mkswap (-L) - setup swap area
+swapon (-s) - activate devices and files for paging and swapping
+swapoff (-a, -v) - disable devices and files for paging and swapping
+mke2fs (-t, -L) - create an extN filesystem (reads /etc/mke2fs.conf)
