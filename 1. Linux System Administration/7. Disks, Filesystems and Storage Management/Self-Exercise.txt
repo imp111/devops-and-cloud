@@ -4,30 +4,122 @@ Self-Exercise M6: Disks, Filesystems and Storage Management
 Tasks:
 
 1. Partition the disk using GPT:
+	
+	sudo dnf install epel-release
+	sudo dnf install -y gdisk
+	sudo gdisk /dev/sdb
+
 	a. First partition of type Linux and 700MB in size;
+		- n -> default -> default -> +700M -> 8300
 	b. Second partition if type Linux Swap and 200MB in size;
+		- n -> default -> default -> +200M -> 8200
 	c. Third partition of type Linux and 300MB in size;
+		- n -> default -> default -> +300M -> 8300
 	d. Fourth partition of type LVM and 100MB in size;
+		- n -> default -> default -> +100M -> 8e00
 	e. Fifth and sixth partitions of type LVM and 300MB in size;
+		- n -> defalt -> default -> +300M -> 8e00
+		- w -> y
+
 2. Create folder /addon and subfolders (check bellow) to mount the new filesystems
+
+	sudo mkdir -p /addon/xfs
+
 3. Create xfs filesystem on the first partition, mount it at /addon/xfs, and include it in the /etc/fstab
+	
+	sudo mkfs.xfs /dev/sdb1
+	sudo mount /dev/sdb1 /addon/xfs
+	sudo blkid /dev/sdb1
+	sudo vi /etc/fstab
+	sudo mount -a
+	sudo mount | grep sdb1
+
+
 4. Initialize the swap partition, turn it on, and include it in the /etc/fstab file
+
+	sudo mkswap /dev/sdb2 (UUID=a82b5944-d04e-4216-85f7-ebeeda4b11f0)
+	sudo swapon /dev/sdb2
+	swapon --show
+	sudo vi /etc/fstab
+	UUID=a82b5944-d04e-4216-85f7-ebeeda4b11f0 none swap defaults 0 0
+
 5. Create ext4 filesystem on the third partition, mount it at /addon/ext4, and include it in the /etc/fstab
+	
+	sudo mkdir -p /addon/ext4
+
+	sudo mkfs.xfs /dev/sdb3
+	sudo mount /dev/sdb3 /addon/ext4
+	sudo blkid /dev/sdb3
+	sudo vi /etc/fstab
+
+
 6. Create PVs on the fourth, fifth, and sixth partitions
+	sudo pvcreate /dev/sdb4
+	sudo pvcreate /dev/sdb5
+	sudo pvcreate /dev/sdb6
+	sudo pvscan
+
 7. Create new VG named vg_addon and include all three PVs created earlier
+	sudo vgcreate vg_addon /dev/sdb4 /dev/sdb5 /dev/sdb6
+
 8. Create new LV named lv_addon with size 400MB
+	sudo lvcreate -n lv_addon -L 400m vg_addon
+	sudo lvscan
+
 9. Create ext4 filesystem on the new LV, mount it at /addon/lvm, and include it in the /etc/fstab
+	sudo mkfs.ext4 /dev/vg_addon/lv_addon	
+	sudo mkdir -p /addon/lvm ; sudo mount /dev/vg_addon/lv_addon /addon/lvm
+	
+
 10. Extend the LV to include all the space available on the VG
+	sudo lvextend -l +100%FREE /dev/vg_addon/lv_addon
 11. Extend the LV's filesystem to include all the available space
+	sudo resize2fs /dev/vg_addon/lv_addon
 12. Reboot the system and check if everything with the new filesystems is okay (list them).
-
-
-
+	sudo reboot
 
 Self-Check:
 
 - Option 1 (wget installed, usually for Debian-based distributions)
 	wget -q https://courses.zahariev.pro/m6.sh -O - | sudo bash
+
+
+	[aleks@10 ~]$ sudo wget -q https://courses.zahariev.pro/m6.sh -O - | sudo bash
+* Working on RHEL-based x86_64 machine (BIOS) using wget to report
+* Testing the /dev/sdb disk layout ...
+... PASS
+* Testing partition #1 of /dev/sdb disk ...
+... PASS
+* Testing partition #2 of /dev/sdb disk ...
+... PASS
+* Testing partition #3 of /dev/sdb disk ...
+... PASS
+* Testing partition #4 of /dev/sdb disk ...
+... PASS
+* Testing partition #5 of /dev/sdb disk ...
+... PASS
+* Testing partition #6 of /dev/sdb disk ...
+... PASS
+* Testing mount folder structure ...
+... PASS
+* Testing partition #1 for filesystem and mount point ...
+... PASS
+* Testing partition #2 for filesystem and mount point ...
+... PASS
+* Testing partition #3 for filesystem and mount point ...
+... PASS
+* Testing that partitions #4, #5, and #6 are initialized as PVs ...
+... PASS
+* Testing that all three PVs are included in a VG ...
+... PASS
+* Testing that LV is created on top of the VG ...
+... PASS
+* Testing that LV is resized to 100% of the VG and mounted ...
+... PASS
+* Testing that LV registed in the /etc/fstab file ...
+... PASS
+{"message":"Your solution report is available here: https:\/\/courses.zahariev.pro\/check.php?202610131909481uORNXgaz2","status":true}
+
 
 - Option 2 (curl installed, most of the distributions)
 	curl -s https://courses.zahariev.pro/m6.sh | sudo bash
