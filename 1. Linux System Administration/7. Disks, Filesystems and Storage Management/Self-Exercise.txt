@@ -1,0 +1,33 @@
+Self-Exercise M6: Disks, Filesystems and Storage Management
+
+
+Tasks:
+
+1. Partition the disk using GPT:
+	a. First partition of type Linux and 700MB in size;
+	b. Second partition if type Linux Swap and 200MB in size;
+	c. Third partition of type Linux and 300MB in size;
+	d. Fourth partition of type LVM and 100MB in size;
+	e. Fifth and sixth partitions of type LVM and 300MB in size;
+2. Create folder /addon and subfolders (check bellow) to mount the new filesystems
+3. Create xfs filesystem on the first partition, mount it at /addon/xfs, and include it in the /etc/fstab
+4. Initialize the swap partition, turn it on, and include it in the /etc/fstab file
+5. Create ext4 filesystem on the third partition, mount it at /addon/ext4, and include it in the /etc/fstab
+6. Create PVs on the fourth, fifth, and sixth partitions
+7. Create new VG named vg_addon and include all three PVs created earlier
+8. Create new LV named lv_addon with size 400MB
+9. Create ext4 filesystem on the new LV, mount it at /addon/lvm, and include it in the /etc/fstab
+10. Extend the LV to include all the space available on the VG
+11. Extend the LV's filesystem to include all the available space
+12. Reboot the system and check if everything with the new filesystems is okay (list them).
+
+
+
+
+Self-Check:
+
+- Option 1 (wget installed, usually for Debian-based distributions)
+	wget -q https://courses.zahariev.pro/m6.sh -O - | sudo bash
+
+- Option 2 (curl installed, most of the distributions)
+	curl -s https://courses.zahariev.pro/m6.sh | sudo bash
