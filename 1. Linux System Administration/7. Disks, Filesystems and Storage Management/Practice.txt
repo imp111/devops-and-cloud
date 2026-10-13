@@ -1,5 +1,7 @@
 Practice: Disks, Filesystems and Storage Management
 
+
+
 Partitioning (MBR and GPT)
 
 MBR Partitioning (fdisk, 512 MBR Table):
@@ -41,7 +43,6 @@ GPT Partitioning (gdisk, 17K GPT Table):
 
 
 
-
 Filesystems (ext4 and xfs):
 
 	sudo mkdir -p /disks/{ext4,xfs}
@@ -66,7 +67,78 @@ Permanent Mounting (fstab, /etc/fstab - mount the file system each time the mach
 
 
 Logical Volume Management (LVM):
+	sudo gdisk /dev/sdb  (create 1 more partition on the second drive)
+	- n -> 3 -> default -> +300M -> 8300
+	- w -> y
+
+	sudo fdisk /dev/sdc (create another partition on the third drive)
+	- n -> 1 -> default -> +400M
+	- t -> 1 -> 44 (for Linux LVM)
+	- w
+
+	sudo partprobe -s
+	lsblk
+
+	sudo pvcreate /dev/sdb1  (creates a lv)
+	sudo pvcreate /dev/sdc3
+	sudo pvscan 
+
+	sudo vgcreate vg1 /dev/sdb1 /dev/sdc3  (create a logic volume group)
+	sudo vgscan  (should show vg1)
+
+	sudo lvcreate -n lv1 -L 600m vg1 (now create a lv named lv1)
+	sudo lvscan
+
+	sudo mkfs.xfs -L LVM-XFS /dev/vg1/lv1
+	sudo mkdir -p /disks/lvm
+	sudo mount /dev/vg1/lv1 /disks/lvm
+
+	sudo lvextend -l +100%FREE /dev/vg1/lv1 (first we extend the logic volume)
+	sudo xfs_growfs /disks/lvm
+	lsblk (to confirm that it is extended using 100% of the free space, 600M -> 692M)
+
+	sudo blkid /dev/vg1/lv1  or /dev/mapper/vg1-lv1 (this will show us the UUID, so we can add it permanently in /etc/fstab)
+	mount -a
+	mount | grep lvm
+
+Software RAID:
+	sudo dnf install -y mdadm
+
+	sudo fdisk /dev/sdb
+	- n -> default -> default -> default
+	- t - fd
+	- p (to confirm the changes)
+	- w
+
+	We should do the fdisk steps for the other drives or execute this 3rd party tool command:
+	sudo parted -s /dev/sdb -- mklabel msdos mkpart primary 1m -0m set 1 raid on
+	sudo parted -s /dev/sdc -- mklabel msdos mkpart primary 1m -0m set 1 raid on
+	sudo parted -s /dev/sdd -- mklabel msdos mkpart primary 1m -0m set 1 raid on
+	sudo parted -s /dev/sde -- mklabel msdos mkpart primary 1m -0m set 1 raid on
+	lsblk (to confirm the changes)
+
+	sudo mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/sdb1 /dev/sdc1   (create Raid0 array out of the first two drivers)
+	cat /proc/mdstat  or sudo mdadm -D /dev/md0  (check the RAID0 status)
+
+	sudo mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sdd1 /dev/sde1
+	cat /proc/mdstat or sudo mdadm -D /dev/md1 (check the RAID1 status)
+
+	sudo mdadm --detail --scan | sudo tee -a /etc/mdadm.conf (so the RAID can be reassembled on boot)
+
+	sudo mkfs.ext4 /dev/md0 ; sudo mkfs.ext4 /dev/md1
+	sudo mkdir -p /disks/raid{0,1}
+	sudo mount /dev/md0 /disks/raid0/
+	sudo mount /dev/md1 /disks/raid1/ 
 	
+	echo '/dev/md0 /disks/raid0 ext4 defaults 0 0' | sudo tee -a /etc/fstab
+	echo '/dev/md1 /disks/raid1 ext4 default 0 0' | sudo tee -a /etc/fstab
+	
+		or
+
+	sudo vi /etc/fstab  and add the lines
+
+
+
 
 
 
