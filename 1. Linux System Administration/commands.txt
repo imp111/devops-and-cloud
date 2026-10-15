@@ -1,33 +1,11 @@
-pwd
-ls (-lah)
-cd
-cat (-n)
-date
-hostname
-cal (-3)
-hostnamectl (hostnamectl set-hostname nameOfTheNewHostname)
-uname (-a)
-uptime (--pretty)
-history (saved in ~/.bash_history)
-exit
-logout 
-reboot
-poweroff
-halt (-p)
-shutdown
-wall - send message to everybody terminal (to all logged in users)
-
+Linux Foundation:
 $PATH, $USER, $SHELL, $HOME, $HOSTNAME, $PWD, $SHLVL, #HISTSIZE (vars can be both system level or user level, the vars are inheritable)
 Vars are read using the $ symbol (echo $SHELL) and edited by using only the var (SHELL="asd")
 Special Env Variables - $? (returns the exit code of the last executed command - 0 success, something else - error), $! (PID of the last job run in background), $$ (PID of the current process), $_ (final argument of the previous command)
 Prompt related - $PS1, $PS2 (each of these two is using prompt macros)
 Prompt macros - \H, \$, \#
 
-printenv - print env variables
-env - runs a program in a modified env (env MYVAR=100 PS1="CHILD:$PS1" bash), the var in the example is created only for the child process created. Can be used to shows env vars (vars focused)
-set (+o, -o) - displays values of shell vars and controls shell options
-unset (-v) - unset values and attributes of shell vars and funcs
-export - used to set inheritable env variables (by default, the new vars are not inherited)
+
 
 
 Executable Artifacts in Shell:
@@ -238,6 +216,29 @@ LVM:
 					 
 					 
 Commands:
+pwd
+ls (-lah)
+cd
+cat (-n)
+date
+hostname
+cal (-3)
+hostnamectl (hostnamectl set-hostname nameOfTheNewHostname)
+uname (-a)
+uptime (--pretty)
+history (saved in ~/.bash_history)
+exit
+logout 
+reboot
+poweroff
+halt (-p)
+shutdown
+wall - send message to everybody terminal (to all logged in users)
+printenv - print env variables
+env - runs a program in a modified env (env MYVAR=100 PS1="CHILD:$PS1" bash), the var in the example is created only for the child process created. Can be used to shows env vars (vars focused)
+set (+o, -o) - displays values of shell vars and controls shell options
+unset (-v) - unset values and attributes of shell vars and funcs
+export - used to set inheritable env variables (by default, the new vars are not inherited)
 lsblk (-f) - list block devices
 fdisk (-l) - manipulate disk partition table (MBR)
 gdisk (-l) - manipulate disk partition table (GPT)
