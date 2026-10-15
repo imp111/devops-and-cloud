@@ -211,6 +211,32 @@ Filesystem types:
 
 Journaling - keeps track of filesystem changes
 
+LVM:
+	PV (Physical Volume)
+	PE (Physical Extent)
+	VG (Volume Group)
+	LV (Logical Volume)
+	FS (File System)
+	MP (Mount Point)
+	
+ ___________________________________________________________
+|VG (vg1)													|
+|	______________		______________		______________  |
+|  |PV (/dev/sda1)|	   |PV (/dev/sdb1)|	   |PV (/dev/sdc1)|	|
+|  |              |    |              |    |              | |
+|  |  PE      PE  |	   |  PE          |    |              | |
+|  |        ______|____|______        |    |              | | 
+|  |  PE   |  PE  |    |  PE  |       |    |              | |
+|  |       |      |    |      |       |    |              | |
+|  |  PE   |  PE  |    |  PE  |		  |    |              | |
+|  |       |______|____|______|       |    |              | |
+|  |______________|	 | |______________|	   |______________|	|
+|____________________|______________________________________|	
+                     | 
+                     |-> LV (lv1) -> FS (ext4) -> MP (/mnt/ext4)
+					 
+					 
+					 
 Commands:
 lsblk (-f) - list block devices
 fdisk (-l) - manipulate disk partition table (MBR)
@@ -221,3 +247,32 @@ mkswap (-L) - setup swap area
 swapon (-s) - activate devices and files for paging and swapping
 swapoff (-a, -v) - disable devices and files for paging and swapping
 mke2fs (-t, -L) - create an extN filesystem (reads /etc/mke2fs.conf)
+mkfs[.xxx] (-t)
+	mkfs.xfs  or mkfs.ext4
+	mkfs.ext4 or mkfs -t ext4
+tune2fs (-l, -L) - adjust tunable filesystem parameters on ext4
+dumpe2fs (-h) - dump ext4 filesystem info
+resize2fs - resize ext4 filesystem
+e2fsck (-n, -p) - check ext4 filesystem
+fsck (-N, -V) - check and repair a Linux filesystem
+xfs_info - show XFS filesystem information
+xfs_admin (-l, -L) - change parameters of XFS filesystem
+xfs_growfs - extend XFS filesystem
+xfs_repair (-nv, -vv) - repair an XFS filesystem
+btrfs
+mount (-a) - mount a filesystem (/etc/fstab, always mount in empty dir)
+umount - unmount a filesystem
+blkid - locate or print blcok device attributes
+tree (-a) - list content of directories in a tree-like format
+pvscan - scan all disks for physical volumes
+pvs (-a) - report information about physical volumes
+pvcreate - initialize a disk or partition for use by LVM
+vgscan (-v) - scan all disks for volume groups and rebuild caches
+vgs - report info about volue groups
+vgcreate (-v) - create a volume group
+vgextend - add physical volumes to a volume group
+lvscan - scan all disks for logical volumes
+lvs - report info about logical volumes
+lvcreate - create a logical volume in an existing volume group   (lvcreate lv-name vg-name)
+lvextend - extend the size of a logical volume
+mdadm - manage MD devices also known as Linux Software RAID
